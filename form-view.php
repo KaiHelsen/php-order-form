@@ -22,11 +22,25 @@
             </li>
         </ul>
     </nav>
+    <?php if(!$isFormOkay){?>
+    <div class="alert alert-danger" role="alert">
+        <p><?php echo $emailErr;?></p>
+        <p><?php echo $streetErr;?></p>
+        <p><?php echo $streetNrErr;?></p>
+        <p><?php echo $cityErr;?></p>
+        <p><?php echo $zipCodeErr;?></p>
+    </div>
+    <?php }
+    else if($isFormSent){?>
+        <div class="alert alert-success" role="alert">
+            <span>Order sent!</span>
+        </div>
+    <?php }?>
     <form method="post">
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="email">E-mail:</label>
-                <input type="text" id="email" name="email" class="form-control"/>
+                <input type="text" id="email" name="email" class="form-control" value="<?php echo $email; ?>"/>
             </div>
             <div></div>
         </div>
@@ -37,21 +51,21 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="street">Street:</label>
-                    <input type="text" name="street" id="street" class="form-control">
+                    <input type="text" name="street" id="street" class="form-control" value="<?php echo $street; ?>">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="streetnumber">Street number:</label>
-                    <input type="text" id="streetnumber" name="streetnumber" class="form-control">
+                    <input type="text" id="streetnumber" name="streetnumber" class="form-control" value="<?php echo $streetNr; ?>">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="city">City:</label>
-                    <input type="text" id="city" name="city" class="form-control">
+                    <input type="text" id="city" name="city" class="form-control" value="<?php echo $city; ?>">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="zipcode">Zipcode</label>
-                    <input type="text" id="zipcode" name="zipcode" class="form-control">
+                    <input type="text" id="zipcode" name="zipcode" class="form-control" value="<?php echo $zipCode; ?>">
                 </div>
             </div>
         </fieldset>

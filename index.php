@@ -1,19 +1,94 @@
 <?php
-//this line makes PHP behave in a more strict way
-declare(strict_types=1);
+require 'config.php';
 
-//we are going to use session variables so we need to enable sessions
-session_start();
+//store variables from POST method
 
-function whatIsHappening() {
-    echo '<h2>$_GET</h2>';
-    var_dump($_GET);
-    echo '<h2>$_POST</h2>';
-    var_dump($_POST);
-    echo '<h2>$_COOKIE</h2>';
-    var_dump($_COOKIE);
-    echo '<h2>$_SESSION</h2>';
-    var_dump($_SESSION);
+//INIT FORM VALUES
+$email = $street = $streetNr = $city = $zipCode = "";
+//INIT FORM ERROR VALUES
+$emailErr = $streetErr = $streetNrErr = $cityErr = $zipCodeErr = "";
+
+$isFormOkay = true;
+$isFormSent = false;
+
+if (!empty($_POST))
+{
+    //store POST data
+    $data = $_POST;
+
+
+    //validate inputs and use appropriately
+
+    //VALIDATE EMAIL
+    if (empty($data["email"]))
+    {
+        $emailErr = "Email is required!";
+        $isFormOkay = false;
+    }
+    else
+    {
+        //validate if email is actually a valid email address
+        $email = $data["email"];
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+        {
+            $emailErr = ("email address is invalid!");
+            $isFormOkay = false;
+        }
+    }
+
+    //VALIDATE STREET
+    if (empty($data["street"]))
+    {
+        $streetErr = "Street is required!";
+        $isFormOkay = false;
+    }
+    else $street = $data["street"];
+
+    //VALIDATE STREET NUMBER
+    if (empty($data["streetnumber"]))
+    {
+        $streetNrErr = "Street number is required!";
+        $isFormOkay = false;
+    }
+    else
+    {
+        //validate if streetnumber is a number
+        $streetNr = $data["streetnumber"];
+        if (!is_numeric($streetNr))
+        {
+            $streetNrErr = ("streetnumber is not a valid number!");
+            $isFormOkay = false;
+        }
+
+    }
+
+    //VALIDATE CITY
+    if (empty($data["city"]))
+    {
+        $cityErr = "City is required!";
+        $isFormOkay = false;
+    }
+    else $city = $data["city"];
+
+    //VALIDATE ZIP CODE
+    if (empty($data["zipcode"]))
+    {
+        $zipCodeErr = "Zip code is required!";
+        $isFormOkay = false;
+    }
+    else
+    {
+        //validate if zip code is a number
+        $zipCode = $data["zipcode"];
+        if (!is_numeric($zipCode))
+        {
+            $zipCodeErr = "streetnumber is not a valid number!";
+            $isFormOkay = false;
+        }
+
+    }
+
+    $isFormSent = $isFormOkay;
 }
 
 //your products with their price.
@@ -33,5 +108,6 @@ $products = [
 ];
 
 $totalValue = 0;
+
 
 require 'form-view.php';
