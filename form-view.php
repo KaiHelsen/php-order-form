@@ -33,7 +33,7 @@
     <?php }
     else if($isFormSent){?>
         <div class="alert alert-success" role="alert">
-            <span>Order sent!</span>
+            <span><?php echo $confirmationMessage;?></span>
         </div>
     <?php }?>
     <form method="post">

@@ -35,12 +35,12 @@ You can start modifying index.php and form-view.php, they already contain some c
 - [x] Prefill the address fields with the saved address.
 Should you use a COOKIE or a SESSION variable for this?
 
-### Step 3: Switch between drinks and food
-- [ ] There are 2 different $product arrays, one with drinks, the other with food. Depending on which link at the top of the page you click, you should be able to order food or drinks (never both).
+### ~~Step 3: Switch between drinks and food~~
+- [x] There are 2 different $product arrays, one with drinks, the other with food. Depending on which link at the top of the page you click, you should be able to order food or drinks (never both).
 The food items should be the default.
 
-### Step 4: Calculate the delivery time
-- [ ] Calculate the expected delivery time for the product. For normal delivery all orders are fulfilled in 2 hours, for express delivery it is only 45 minutes.
+### ~~Step 4: Calculate the delivery time~~
+- [x] Calculate the expected delivery time for the product. For normal delivery all orders are fulfilled in 2 hours, for express delivery it is only 45 minutes.
 Add this expected time to the confirmation message.
 If you are wondering: they deliver with drones.
 

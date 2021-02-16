@@ -16,3 +16,8 @@ function whatIsHappening() {
     echo '<h2>$_SESSION</h2>';
     var_dump($_SESSION);
 }
+//whatIsHappening();
+
+function cleanseInput($input){
+    return htmlSpecialChars($input, ENT_NOQUOTES, 'UTF-8');
+}
