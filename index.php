@@ -24,11 +24,13 @@ if (!empty($_POST))
     {
         $emailErr = "Email is required!";
         $isFormOkay = false;
+        $email = $_SESSION["email"];
     }
     else
     {
+        $_SESSION["email"] = $email = $data["email"];
+
         //validate if email is actually a valid email address
-        $email = $data["email"];
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))
         {
             $emailErr = ("email address is invalid!");
@@ -41,25 +43,30 @@ if (!empty($_POST))
     {
         $streetErr = "Street is required!";
         $isFormOkay = false;
+        $street = $_SESSION["street"];
     }
-    else $street = $data["street"];
+    else
+    {
+        $_SESSION["street"] = $street = $data["street"];
+
+    }
 
     //VALIDATE STREET NUMBER
     if (empty($data["streetnumber"]))
     {
         $streetNrErr = "Street number is required!";
         $isFormOkay = false;
+        $streetNr = $_SESSION["streetNr"];
     }
     else
     {
         //validate if streetnumber is a number
-        $streetNr = $data["streetnumber"];
+        $_SESSION["streetNr"] = $streetNr = $data["streetnumber"];
         if (!is_numeric($streetNr))
         {
-            $streetNrErr = ("streetnumber is not a valid number!");
+            $streetNrErr = ("street number is not a valid number!");
             $isFormOkay = false;
         }
-
     }
 
     //VALIDATE CITY
@@ -67,19 +74,24 @@ if (!empty($_POST))
     {
         $cityErr = "City is required!";
         $isFormOkay = false;
+        $city = $_SESSION["city"];
     }
-    else $city = $data["city"];
+    else
+    {
+        $_SESSION["city"] = $city = $data["city"];
+    }
 
     //VALIDATE ZIP CODE
     if (empty($data["zipcode"]))
     {
         $zipCodeErr = "Zip code is required!";
         $isFormOkay = false;
+        $zipCode = $_SESSION["zipCode"];
     }
     else
     {
         //validate if zip code is a number
-        $zipCode = $data["zipcode"];
+        $_SESSION["zipCode"] = $zipCode = $data["zipcode"];
         if (!is_numeric($zipCode))
         {
             $zipCodeErr = "streetnumber is not a valid number!";
@@ -89,6 +101,29 @@ if (!empty($_POST))
     }
 
     $isFormSent = $isFormOkay;
+}
+else
+{
+    if (!empty($_SESSION["email"]))
+    {
+        $email = $_SESSION["email"];
+    }
+    if (!empty($_SESSION["street"]))
+    {
+        $street = $_SESSION["street"];
+    }
+    if (isset($_SESSION["streetNr"]))
+    {
+        $streetNr = $_SESSION["streetNr"];
+    }
+    if (isset($_SESSION["city"]))
+    {
+        $city = $_SESSION["city"];
+    }
+    if (isset($_SESSION["zipCode"]))
+    {
+        $zipCode = $_SESSION["zipCode"];
+    }
 }
 
 //your products with their price.

@@ -29,10 +29,10 @@ You can start modifying index.php and form-view.php, they already contain some c
 -[x] If the form is invalid make sure all the values the user entered are still displayed in the form, so he doesn't need to fill them all in again!
 -[x] If the form is valid (for now) just show the user a message above the form that his order has been sent
 
-### Step 2: Make sure the address is saved
--[ ] Save all the address information as long as the user doesn't close the browser. When he closes the browser it is oké to lose his information.
+### ~~Step 2: Make sure the address is saved~~
+-[x] Save all the address information as long as the user doesn't close the browser. When he closes the browser it is oké to lose his information.
 
--[ ] Prefill the address fields with the saved address.
+-[x] Prefill the address fields with the saved address.
 Should you use a COOKIE or a SESSION variable for this?
 
 ### Step 3: Switch between drinks and food
