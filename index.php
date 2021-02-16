@@ -28,12 +28,14 @@ else
 const NORMAL_DELIVERY_TIME = 2 * 60;    //time in minutes
 const EXPRESS_DELIVERY_TIME = 45;       //time in minutes
 const EXPRESS_DELIVERY_COST = 5;        //cost in euros. you can't fool me.
+const COOKIE_NAME = "totalSpentAmount"; //name to use in the cookie
 
 //INIT ADDRESS FORM VALUES
 $email = $street = $streetNr = $city = $zipCode = "";
 $emailErr = $streetErr = $streetNrErr = $cityErr = $zipCodeErr = "";
 $expressDelivery = false;
 $totalValue = 0;
+$totalSpentValue = 0;
 
 //HANDLE FORM & ADDRESS INPUT
 $isFormOkay = true;
@@ -140,7 +142,7 @@ if (!empty($_POST))
     }
 
     //HANDLE CONFIRMATION MESSAGE
-    if ($isFormOkay)
+    if ($isFormOkay && $totalValue > 0)
     {
         $timeToDelivery = NORMAL_DELIVERY_TIME;
         if (isset($data["express_delivery"]))
@@ -176,8 +178,19 @@ else
     }
 }
 
+//CREATE COOKIE
+//initialize
+if(isset($_COOKIE[COOKIE_NAME])){
+    $totalSpentValue = $_COOKIE[COOKIE_NAME] + $totalValue;
+//    echo $totalSpentValue;
+}
+else{
+//    echo "initializing cookie";
+    $totalSpentValue += $totalValue;
+}
+setCookie(COOKIE_NAME, $totalSpentValue, time() + (86400 * 30), "/");
 
-
-
+//delete cookie
+//setCookie(COOKIE_NAME, "", time() - 3600);
 
 require 'form-view.php';
