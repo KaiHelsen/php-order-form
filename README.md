@@ -48,13 +48,17 @@ If you are wondering: they deliver with drones.
 - [x] Add a counter at the bottom of the page that shows the total amount of money that has been spent on this page from this browser. 
 Should you use a COOKIE or a SESSION variable for this?
 
-### Step 6: Send the e-mail
-- [ ] Use the `mail()` function in PHP to send an e-mail with a summary of the order.
+### ~~Step 6: Send the e-mail~~
+- [x] Use the `mail()` function in PHP to send an e-mail with a summary of the order.
 The e-mail should contain all information filled in by the user + the total price of all ordered items.
 Display the expected delivery time.
 Make sure to not forget the extra cost for express delivery!
 Sent this e-mail to the user + [a predefined](https://www.php.net/define) e-mail of the restaurant owner.
+  
+- [ ] I mean I guess it works but there's no way to check right now without setting up an actual server to send mails.
+I don't really want to go through that right now, maybe tomorrow.
 
+- [ ] I should probably also clean it up a bit because right now I deem this to be quite messy.
 ## Nice to have features
 - [ ] Change the checkboxes to an input field to accept a quantity.
 Change the price calculation and email to support buying multiple items.

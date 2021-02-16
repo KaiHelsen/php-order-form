@@ -37,6 +37,8 @@ $expressDelivery = false;
 $totalValue = 0;
 $totalSpentValue = 0;
 
+//STUFF FOR MAILS
+
 //HANDLE FORM & ADDRESS INPUT
 $isFormOkay = true;
 $isFormSent = false;
@@ -134,14 +136,14 @@ if (!empty($_POST))
 
     if (isset($data["products"]))
     {
-        foreach ($data["products"] as $key=>$item)
+        foreach ($data["products"] as $key => $item)
         {
 //            echo($products[$key]['name']);
             $totalValue += $products[$key]['price'] * (int)$item;
         }
     }
 
-    //HANDLE CONFIRMATION MESSAGE
+    //HANDLE CONFIRMATION MESSAGE & CONFIRMATION EMAIL
     if ($isFormOkay && $totalValue > 0)
     {
         $timeToDelivery = NORMAL_DELIVERY_TIME;
@@ -152,6 +154,12 @@ if (!empty($_POST))
         }
         $isFormSent = true;
         $confirmationMessage = "Your order has been successfully placed and will arrive in " . date('H:i', mkTime(0, $timeToDelivery)) . " hours";
+
+        $message = "delivery address: \n" . $street . " " . $streetNr . "\n" . $city . " ZIP: " . $zipCode . "\n Order final cost: " . $totalValue;
+        $message .= "estimated time of delivery in " . date('H:i', mkTime(0, $timeToDelivery)) . " hours";
+
+        mail($email, "git yo sandwiches", $message);
+        mail("owner@place.holder", "someone ordered stuff", $message);
     };
 }
 else
@@ -180,11 +188,13 @@ else
 
 //CREATE COOKIE
 //initialize
-if(isset($_COOKIE[COOKIE_NAME])){
+if (isset($_COOKIE[COOKIE_NAME]))
+{
     $totalSpentValue = $_COOKIE[COOKIE_NAME] + $totalValue;
 //    echo $totalSpentValue;
 }
-else{
+else
+{
 //    echo "initializing cookie";
     $totalSpentValue += $totalValue;
 }
