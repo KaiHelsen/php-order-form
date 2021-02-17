@@ -2,25 +2,52 @@
 require 'config.php';
 
 //FIRST, INITIALIZE LIST OF PRODUCTS ON THE PAGE
-if (!isset($_GET["food"]) || $_GET["food"] == 1)
+//putting them in separate arrays makes it a little cleaner in the long run
+
+class Items
 {
-    $products = [
-        ['name' => 'Club Ham', 'price' => 3.20],
-        ['name' => 'Club Cheese', 'price' => 3],
-        ['name' => 'Club Cheese & Ham', 'price' => 4],
-        ['name' => 'Club Chicken', 'price' => 4],
-        ['name' => 'Club Salmon', 'price' => 5]
-    ];
+    private array $list = [];
+
+    public function __construct()
+    {
+    }
+
+    public function AddItem(string $name, float $price)
+    {
+        array_push($this->list, ['name' => $name, 'price' => $price]);
+    }
+
+
+    public function GetPrice(int $key){
+        return $this->list[$key]['price'];
+    }
+
+    public function GetItems() : array
+    {
+        return $this->list;
+    }
+
+    public function ResetAmounts()
+    {
+        foreach($this->list as &$item){
+            $item['amount'] = 0;
+        }
+    }
 }
-else
-{
-    $products = [
-        ['name' => 'Cola', 'price' => 2],
-        ['name' => 'Fanta', 'price' => 2],
-        ['name' => 'Sprite', 'price' => 2],
-        ['name' => 'Ice-tea', 'price' => 3],
-    ];
-}
+
+$drinksCls = new Items();
+$drinksCls->AddItem('Cola', 2);
+$drinksCls->AddItem('Fanta', 2);
+$drinksCls->AddItem('Sprite', 2);
+$drinksCls->AddItem('Ice-tea', 3);
+
+$foodCls = new Items();
+$foodCls->AddItem('Club Ham', 3.20);
+$foodCls->AddItem('Club Cheese', 3);
+$foodCls->AddItem('Club Cheese & Ham', 4);
+$foodCls->AddItem('Club Chicken', 4);
+$foodCls->AddItem('Club Salmon', 5);
+
 //later on, we can parse through $products to calculate what has been ordered and how much it cost.
 //this way of doings things should prevent abuse through adjusting HTML
 
@@ -29,10 +56,16 @@ const NORMAL_DELIVERY_TIME = 2 * 60;    //time in minutes
 const EXPRESS_DELIVERY_TIME = 45;       //time in minutes
 const EXPRESS_DELIVERY_COST = 5;        //cost in euros. you can't fool me.
 const COOKIE_NAME = "totalSpentAmount"; //name to use in the cookie
+CONST DRINKS_PAGE = "drinks";           //unless I get enums this is how we'll handle pages
+CONST FOOD_PAGE = "foodstuffs";         //ditto
+
+define("OWNERS_MAIL", "bossMail@thisServer.derp");
 
 //INIT ADDRESS FORM VALUES
 $email = $street = $streetNr = $city = $zipCode = "";
-$emailErr = $streetErr = $streetNrErr = $cityErr = $zipCodeErr = "";
+$emailErr = $streetErr = $streetNrErr = $cityErr = $zipCodeErr = $orderErr = "";
+$currentPage = 0;
+$drinksAmount = $foodAmount = [];
 $expressDelivery = false;
 $totalValue = 0;
 $totalSpentValue = 0;
@@ -44,14 +77,26 @@ $isFormOkay = true;
 $isFormSent = false;
 $confirmationMessage = "";
 
+//
+if (!isset($_GET["food"]) || $_GET["food"] != 0)
+{
+    $products = $foodCls->GetItems();
+    $currentPage = FOOD_PAGE;
+}
+else
+{
+    $products = $drinksCls->GetItems();
+    $currentPage = DRINKS_PAGE;
+}
+
+//HANDLE POST DATA
 if (!empty($_POST))
 {
     //store POST data
-    $data = $_POST;
+    $postData = $_POST;
     //validate inputs and use appropriately
-
     //VALIDATE EMAIL
-    if (empty($data["email"]))
+    if (empty($postData["email"]))
     {
         $emailErr = "Email is required!";
         $isFormOkay = false;
@@ -59,7 +104,7 @@ if (!empty($_POST))
     }
     else
     {
-        $_SESSION["email"] = $email = cleanseInput($data["email"]);
+        $_SESSION["email"] = $email = cleanseInput($postData["email"]);
 
         //validate if email is actually a valid email address
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))
@@ -70,7 +115,7 @@ if (!empty($_POST))
     }
 
     //VALIDATE STREET
-    if (empty($data["street"]))
+    if (empty($postData["street"]))
     {
         $streetErr = "Street is required!";
         $isFormOkay = false;
@@ -78,12 +123,12 @@ if (!empty($_POST))
     }
     else
     {
-        $_SESSION["street"] = $street = cleanseInput($data["street"]);
+        $_SESSION["street"] = $street = cleanseInput($postData["street"]);
 
     }
 
     //VALIDATE STREET NUMBER
-    if (empty($data["streetnumber"]))
+    if (empty($postData["streetnumber"]))
     {
         $streetNrErr = "Street number is required!";
         $isFormOkay = false;
@@ -92,7 +137,7 @@ if (!empty($_POST))
     else
     {
         //validate if streetnumber is a number
-        $_SESSION["streetNr"] = $streetNr = cleanseInput($data["streetnumber"]);
+        $_SESSION["streetNr"] = $streetNr = cleanseInput($postData["streetnumber"]);
         if (!is_numeric($streetNr))
         {
             $streetNrErr = ("street number is not a valid number!");
@@ -101,7 +146,7 @@ if (!empty($_POST))
     }
 
     //VALIDATE CITY
-    if (empty($data["city"]))
+    if (empty($postData["city"]))
     {
         $cityErr = "City is required!";
         $isFormOkay = false;
@@ -109,11 +154,11 @@ if (!empty($_POST))
     }
     else
     {
-        $_SESSION["city"] = $city = cleanseInput($data["city"]);
+        $_SESSION["city"] = $city = cleanseInput($postData["city"]);
     }
 
     //VALIDATE ZIP CODE
-    if (empty($data["zipcode"]))
+    if (empty($postData["zipcode"]))
     {
         $zipCodeErr = "Zip code is required!";
         $isFormOkay = false;
@@ -122,7 +167,7 @@ if (!empty($_POST))
     else
     {
         //validate if zip code is a number
-        $_SESSION["zipCode"] = $zipCode = cleanseInput($data["zipcode"]);
+        $_SESSION["zipCode"] = $zipCode = cleanseInput($postData["zipcode"]);
         if (!is_numeric($zipCode))
         {
             $zipCodeErr = "streetnumber is not a valid number!";
@@ -133,21 +178,35 @@ if (!empty($_POST))
 
     //CHECK & VALIDATE PRODUCTS
     //$data["products"] returns either null or an array of checked items
-
-    if (isset($data["products"]))
+    if (isset($postData["products"]))
     {
-        foreach ($data["products"] as $key => $item)
+        $_SESSION[$currentPage] = $postData["products"];
+
+        //clamp negative values
+        foreach($_SESSION[$currentPage] as &$product)
         {
-//            echo($products[$key]['name']);
-            $totalValue += $products[$key]['price'] * (int)$item;
+            $product = max(0,$product);
         }
+
+        //calculate total value of order
+        //calculate the value of the drinks AND the food
+        foreach($_SESSION[DRINKS_PAGE] as $i => $item)
+        {
+            $totalValue += $drinksCls->GetPrice($i) * (int)$item;
+        }
+        foreach($_SESSION[FOOD_PAGE] as $i => $item)
+        {
+            $totalValue += $foodCls->GetPrice($i) * (int)$item;
+        }
+
     }
 
     //HANDLE CONFIRMATION MESSAGE & CONFIRMATION EMAIL
-    if ($isFormOkay && $totalValue > 0)
+    if ($isFormOkay && $totalValue >= 0)
     {
+        //check time to delivery and if it's express delivery, add cost to total value.
         $timeToDelivery = NORMAL_DELIVERY_TIME;
-        if (isset($data["express_delivery"]))
+        if (isset($postData["express_delivery"]))
         {
             $timeToDelivery = EXPRESS_DELIVERY_TIME;
             $totalValue += EXPRESS_DELIVERY_COST;
@@ -159,7 +218,11 @@ if (!empty($_POST))
         $message .= "estimated time of delivery in " . date('H:i', mkTime(0, $timeToDelivery)) . " hours";
 
         mail($email, "git yo sandwiches", $message);
-        mail("owner@place.holder", "someone ordered stuff", $message);
+        mail(OWNERS_MAIL, "someone ordered stuff", $message);
+
+        //remove orders from session storage
+//        unset($_SESSION[DRINKS_PAGE]);
+//        unset($_SESSION[FOOD_PAGE]);
     };
 }
 else
@@ -202,5 +265,8 @@ setCookie(COOKIE_NAME, $totalSpentValue, time() + (86400 * 30), "/");
 
 //delete cookie
 //setCookie(COOKIE_NAME, "", time() - 3600);
+
+//delete session
+//session_destroy();
 
 require 'form-view.php';

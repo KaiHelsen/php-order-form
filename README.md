@@ -59,11 +59,11 @@ Sent this e-mail to the user + [a predefined](https://www.php.net/define) e-mail
 I don't really want to go through that right now, maybe tomorrow.
 
 - [ ] I should probably also clean it up a bit because right now I deem this to be quite messy.
-## Nice to have features
-- [ ] Change the checkboxes to an input field to accept a quantity.
+## ~~Nice to have features~~
+- [x] Change the checkboxes to an input field to accept a quantity.
 Change the price calculation and email to support buying multiple items.
-- [ ] Make it possible to buy both drinks and food in one order. Still have the selections toggleable (no javascript!).
-- [ ] Change the products to use Objects instead of an array.
+- [x] Make it possible to buy both drinks and food in one order. Still have the selections toggleable (no javascript!).
+- [x] Change the products to use Objects instead of an array.
 
 ## Tips
 - You can use `filter_var($email, FILTER_VALIDATE_EMAIL)` to filter for e-mails.
